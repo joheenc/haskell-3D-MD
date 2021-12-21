@@ -19,8 +19,8 @@ to output diagnostics to the command prompt once the program finishes.
 
 Test Cases
 ----------
-Various test configurations can be run to explore the limits and speedups of our program. The relevant parameters should be changed directly at the top FluidDyn.hs file. You can choose between two main functions--mainAnim or mainNoAnim--where the former runs a 3D animation of the physics simulation at 50 frames per second, and the latter runs the simulation for simLen timesteps as fast as it can. mainAnim is of course more expensive, so in our experience it can only handle up to n=5 (i.e. 125 particles in a 5x5x5 starting grid) when using N=4 cores. mainNoAnim can be pushed further to a greater number of particles.
+Various test configurations can be run to explore the limits and speedups of our program. The relevant parameters should be changed directly at the top FluidDyn.hs file. You can choose between two main functions--`mainAnim` or `mainNoAnim`--where the former runs a 3D animation of the physics simulation at 50 frames per second, and the latter runs the simulation for `simLen` timesteps as fast as it can. `mainAnim` is of course more expensive, and in our experience it can only handle up to n=5 (i.e. 125 particles in a 5x5x5 starting grid) when using N=4 cores. `mainNoAnim` can be pushed farther, to a greater number of particles. See our report for details on its performance scaling.
 
-For optimal performance, set the chunkSize parameter to (number of cores)/(number of particles) in FluidDyn.hs
+For optimal performance, set the `chunkSize` parameter to `(number of cores)/(number of particles)` in FluidDyn.hs
 
 For our report, we ran all of our test cases using a prior 2D version of the algorithm, using arrays of up to 576 total particles or up to a simLen of 2000 time-steps. Using 4 cores, we achieve up to a 2.5x speedup.
