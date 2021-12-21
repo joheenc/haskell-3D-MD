@@ -13,9 +13,9 @@ instance Show Atom where
 s = 6 {- container dimension -}
 rad = 0.15 {- atom radius -}
 dt = 0.1 {- time step -}
-chunkSize = 32 {- chunk size to use in parListChunk -}
 n = 4 {- grid size, i.e. initializes n x n x n cube of atoms
           (don't use n>5 for animated executions; for n=5, you will likely need to use N=4 cores)-}
+chunkSize = 32 {- chunk size to use in parListChunk. Set this to numCores / n^3 -}
 main :: IO ()
 main = mainAnim {-choose from mainAnim or mainNoAnim to either run the
                     simulation 3D animated in a GUI window, or run a finite number
