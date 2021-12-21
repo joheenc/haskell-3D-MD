@@ -3,23 +3,29 @@ import Linear.V3
 import Linear.Vector
 import Control.Parallel.Strategies
 import Vis
-data Atom = Atom { i :: Int,
-                   r :: V3 Float,
-                   v :: V3 Float }
 
-instance Show Atom where
-  show (Atom i r v) = show i ++ ": r=" ++ show r ++ ", v=" ++ show v
-
-s = 6 {- container dimension -}
-rad = 0.15 {- atom radius -}
-dt = 0.1 {- time step -}
 n = 4 {- grid size, i.e. initializes n x n x n cube of atoms
           (don't use n>5 for animated executions; for n=5, you will likely need to use N=4 cores)-}
 chunkSize = 32 {- chunk size to use in parListChunk. Set this to numCores / n^3 -}
+s = 7 {- cubical container side length; if you have a large n, e.g. >=9, make sure to expand the box so there is space
+         for the particles to take discrete time steps without getting unphysically close together, e.g. s >= 10 -}
+simLen = 300 {- number of time steps to run the simulation for, if you're using mainNoAnim -}
 main :: IO ()
 main = mainAnim {-choose from mainAnim or mainNoAnim to either run the
                     simulation 3D animated in a GUI window, or run a finite number
                     of time steps without any animation-}
+
+{- more parameters; you probably don't want to change these -}
+rad = 0.15 {- atom radius -}
+dt = 0.1 {- time step length -}
+
+{- define the Atom data type, the basic unit of our simulation -}
+data Atom = Atom { i :: Int,       -- index in the array
+                   r :: V3 Float,  -- position vector
+                   v :: V3 Float } -- velocity vector
+
+instance Show Atom where
+  show (Atom i r v) = show i ++ ": r=" ++ show r ++ ", v=" ++ show v
 
 {- position update in linear time -}
 rstep :: Float -> Atom -> V3 Float -> Atom
@@ -31,7 +37,7 @@ vstep :: Float -> Atom -> V3 Float -> Atom
 vstep dt atom a = Atom i r v'
   where (Atom i r v) = atom
         v' = (bound atom) * (v + (0.5 * dt) *^ a)
-        bound (Atom _ (V3 x y z) _) = V3 xf yf zf
+        bound (Atom _ (V3 x y z) _) = V3 xf yf zf -- enforces rigid wall boundary condition
           where xf = if (abs x + rad > s/2) then (-1) else 1
                 yf = if (abs y + rad > s/2) then (-1) else 1
                 zf = if (abs z + rad > s/2) then (-1) else 1
@@ -73,7 +79,6 @@ mainAnim = simulate options refreshRate initConfig draw update
         update _ config = step dt config
 
 {- run the program with no animation -}
-simLen = 300 {- number of time steps to run the simulation for -}
 mainNoAnim = runSim simLen (grid n)
   where runSim :: Int -> [Atom] -> IO ()
         runSim 0 model' = do
