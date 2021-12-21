@@ -1,7 +1,6 @@
 import Linear.Metric
 import Linear.V3
 import Linear.Vector
-import Control.Parallel(par)
 import Control.Parallel.Strategies
 import Vis
 data Atom = Atom { i :: Int,
@@ -14,7 +13,13 @@ instance Show Atom where
 s = 5 {- container dimension -}
 rad = 0.15 {- atom radius -}
 dt = 0.1 {- time step -}
-chunkSize = 32 {- chunk size to use in parListChunk -}
+chunkSize = 54 {- chunk size to use in parListChunk -}
+n = 4 {- grid size, i.e. initializes n x n x n cube of atoms
+          (don't use n>5 for animated executions)-}
+main :: IO ()
+main = mainAnim {-choose from mainAnim or mainNoAnim to either run the
+                    simulation 3D animated in a GUI window, or run a finite number
+                    of time steps without any animation-}
 
 {- position update in linear time -}
 rstep :: Float -> Atom -> V3 Float -> Atom
@@ -51,9 +56,6 @@ step dt atoms = zipWith (vstep dt) r' f'
         r' = zipWith (rstep dt) atoms f
         f' = f ^+^ (fstep r' `using` parListChunk chunkSize rdeepseq)
 
-main :: IO ()
-main = mainAnim
-
 {- run the program with animation enabled -}
 mainAnim = simulate options refreshRate initConfig draw update
   where options =
@@ -64,19 +66,21 @@ mainAnim = simulate options refreshRate initConfig draw update
             }
           )
         refreshRate = 0.02
-        initConfig = grid 4
+        initConfig = grid n
         draw config = VisObjects $ [box] ++ (drawAtom <$> config `using` parListChunk chunkSize rseq)
           where box = Trans (V3 0 0 0) $ Box (s, s, s) Wireframe black
                 drawAtom atom = Trans (r atom) $ Sphere rad Solid blue
         update _ config = step dt config
 
 {- run the program with no animation -}
-mainNoAnim = runSim 1000 (grid 8)
+simLen = 300 {- number of time steps to run the simulation for -}
+mainNoAnim = runSim simLen (grid n)
   where runSim :: Int -> [Atom] -> IO ()
         runSim 0 model' = do
+          putStrLn (show $ head model')
           return ()
         runSim n model = do
-          let model' = step (1.0/60.0) model
+          let model' = step dt model
           runSim (n-1) model'
 
 {- initialize a n x n x n cubical grid as the initial atom configuration -}
