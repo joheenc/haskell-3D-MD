@@ -1,6 +1,6 @@
 FluidDyn
 ==========
-A parallelized Haskell simulation of the molecular dynamics of liquid argon, using the velocity Verlet algorithm
+A parallelized Haskell 3D simulation of the molecular dynamics of liquid argon, using the velocity Verlet algorithm
 
 ![demo](FluidDyn.gif)
 
