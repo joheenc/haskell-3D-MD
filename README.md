@@ -17,7 +17,7 @@ If you choose to run the "mainNoAnim" function, you can replace the second line 
 ```
 to output diagnostics to the command prompt once the program finishes.
 
-You will need the `Control.Parallel`, `not-gloss`, and `Linear`. Run the commands:
+You will need the `Control.Parallel`, `not-gloss`, and `Linear` external modules. Run the commands:
 ```
 stack install parallel
 stack install not-gloss
